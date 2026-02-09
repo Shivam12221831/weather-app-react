@@ -47,7 +47,6 @@ export const DisplayWeather = () => {
     if (!favContext) return null;
     
     function handleFavorite() {
-        if (!favContext?.favs.length) return;
         setShowFavDropdown(prev => !prev);
     }
 
@@ -73,16 +72,26 @@ export const DisplayWeather = () => {
                                 <RiArrowDropDownLine size={28} />
                             </button>
 
-                            {showFavDropdown && favContext?.favs.length > 0 && (
+                            {showFavDropdown &&  (
                                 <div className="absolute top-full left-0 w-full text-black bg-white shadow-lg border rounded-b-md z-50">
-                                    {favContext.favs.map((cityName) => (
-                                        <div key={cityName} className="flex items-center justify-between px-4 py-2 hover:bg-gray-200 cursor-pointer">
-                                            <button onClick={() => handleSelectCity(cityName)} className="flex-1 text-left cursor-pointer">{cityName}</button>
+                                    {favContext.favs.length > 0 ? (
+                                        favContext.favs.map((cityName) => (
+                                            <div key={cityName} className="flex items-center justify-between px-4 py-2 hover:bg-gray-200 cursor-pointer">
+                                                <button onClick={() => handleSelectCity(cityName)} className="flex-1 text-left cursor-pointer">{cityName}</button>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="absolute top-full left-0 w-full text-black bg-white shadow-lg border rounded-b-md z-50">
+                                            <div className="flex items-center justify-between px-4 py-2 hover:bg-gray-200 cursor-pointer">
+                                                <button className="flex-1 text-left">No Favourites</button>
+                                            </div>
                                         </div>
-                                    ))}
+                                    )}
                                 </div>
+
                             )}
                         </div>
+
                         <div className="flex flex-wrap justify-center gap-5 md:gap-3 order-2">
                             <button onClick={() => navigate('/')} className={`rounded-md h-9 px-4 ${ theme === "dark" ? "button-dark" : "button-light" }`}> Home </button>
                             <button onClick={themeContext?.toggleTheme} className={`rounded-md h-9 px-4 ${ theme === "dark" ? "button-dark" : "button-light" }`}>

@@ -11,11 +11,14 @@ import { RiArrowDropDownLine } from "react-icons/ri";
 import { IoSunnySharp } from "react-icons/io5";
 import { BsFillMoonStarsFill } from "react-icons/bs";
 import { ErrorBox } from "./ErrorBox";
+import { getCurrentLocation } from "@/utils/getCurrentLocation";
+import { toast } from "sonner";
+import { MdMyLocation } from "react-icons/md";
 
 export const DisplayWeather = () => {
     const navigate = useNavigate();
     const [error, setError] = useState("");
-    const [showFavDropdown, setShowFavDropdown] = useState<boolean>(false);
+    const [showFavDropdown, setShowFavDropdown] = useState<boolean>(false)
     const [searchParam, setSearchParams] = useSearchParams();
     const city = searchParam.get("city");
     const themeContext = useContext(ThemeContext);
@@ -56,6 +59,33 @@ export const DisplayWeather = () => {
         setShowFavDropdown(false);
     }
 
+    async function handleCurrentLocation() {
+        const toastId = toast.loading("Detecting your location...");
+        const result = await getCurrentLocation();
+        if (result.error === "permission") {
+            toast.error("Location permission denied", { id: toastId });
+            return;
+        }
+        if (result.error === "unavailable") {
+            toast.error("Location unavailable", { id: toastId });
+            return;
+        }
+        if (result.error === "timeout") {
+            toast.error("Location request timed out", { id: toastId });
+            return;
+        }
+        if (!result.city) {
+            toast.error("Unable to fetch location", { id: toastId });
+            return;
+        }
+        if (result.city === city) {
+            toast.error("Already showing the current location weather", { id: toastId });
+            return;
+        }
+        toast.success(`Showing weather for ${result.city}`, { id: toastId });
+        setSearchParams({ city: result.city });
+    }
+
     return (
         <div className="relative min-h-screen">
             <div className="fixed inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${theme === "dark" ? bg_dark_img : bg_light_img})` }}/>
@@ -63,10 +93,10 @@ export const DisplayWeather = () => {
 
             <div className={ themeContext?.theme === "dark" ? "relative z-10 min-h-screen font-semibold text-black" : "relative z-10 min-h-screen font-semibold text-white" }>
                 <div className="font-serif">
-                    <div className="py-10 px-5 flex flex-col md:flex-row items-center md:items-center md:justify-between gap-6">
-                        <p className="text-4xl sm:text-5xl font-semibold order-1 md:order-2 text-center">WeatherDash</p>
+                    <div className="py-10 px-5 flex flex-col lg:flex-row items-center lg:items-center lg:justify-between gap-6">
+                        <p className="text-4xl sm:text-5xl lg:pl-17 font-semibold order-1 lg:order-2 text-center">WeatherDash</p>
 
-                        <div ref={dropdownRef} className="relative w-45 order-3 md:order-1">
+                        <div ref={dropdownRef} className="relative w-45 order-3 lg:order-1">
                             <button onClick={handleFavorite} className={`w-full h-9 pl-3 pr-2 cursor-pointer flex items-center justify-between rounded-md ${ theme === "dark" ? "button-dark" : "button-light"}`}>
                                 Favourite Cities
                                 <RiArrowDropDownLine size={28} />
@@ -92,9 +122,15 @@ export const DisplayWeather = () => {
                             )}
                         </div>
 
-                        <div className="flex flex-wrap justify-center gap-5 md:gap-3 order-2">
-                            <button onClick={() => navigate('/')} className={`rounded-md h-9 px-4 ${ theme === "dark" ? "button-dark" : "button-light" }`}> Home </button>
-                            <button onClick={themeContext?.toggleTheme} className={`rounded-md h-9 px-4 ${ theme === "dark" ? "button-dark" : "button-light" }`}>
+                        <div className="flex flex-wrap justify-center gap-2 md:gap-3 order-2">
+                            <button onClick={handleCurrentLocation} className={`rounded-md h-9 px-3 ${ theme === "dark" ? "button-dark" : "button-light" }`}>
+                                <div className="flex gap-1 items-center">
+                                    <MdMyLocation className="text-red-500 pb-0.5" size={16}/>
+                                    Current Location
+                                </div>
+                            </button>
+                            <button onClick={() => navigate('/')} className={`rounded-md h-9 px-3 ${ theme === "dark" ? "button-dark" : "button-light" }`}> Home </button>
+                            <button onClick={themeContext?.toggleTheme} className={`rounded-md h-9 px-3 ${ theme === "dark" ? "button-dark" : "button-light" }`}>
                                 {themeContext?.theme==="dark" ? 
                                     <div className="flex gap-1 items-center">
                                         <BsFillMoonStarsFill className="text-yellow-400" size={15}/>
@@ -112,9 +148,7 @@ export const DisplayWeather = () => {
 
                     <div className="my-5 px-8">
                         <Searchbar
-                            onSearch={(newCity) => {
-                                setSearchParams({ city: newCity });
-                            }}
+                            onSearch={(newCity) => setSearchParams({ city: newCity })}
                             placeholderText="Search a city to get weather"
                         />
                     </div>

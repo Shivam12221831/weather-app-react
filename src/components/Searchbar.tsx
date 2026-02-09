@@ -5,11 +5,13 @@ import { getCountryName } from "../utils/formatData";
 import type { SuggestionsType } from "../types/searchType";
 import { useSearchParams } from "react-router-dom";
 import { ThemeContext } from "@/context/ThemeContext";
+import { toast } from "sonner";
 
 export const Searchbar = ({ onSearch, placeholderText }: SearchProps) => {
     const [inputValue, setInputValue] = useState<string>("");
     const [suggestions, setSuggestions] = useState<SuggestionsType[]>([]);
     const [isFocused, setIsFocused] = useState<boolean>(false);
+    const [activeIndex, setActiveIndex] = useState<number>(-1);
     const [triggerCityFetch, setTriggerCityFetch] = useState<number>(0);
     const [searchParam, setSearchParams] = useSearchParams();
     const paramCity = searchParam.get("city");
@@ -42,6 +44,10 @@ export const Searchbar = ({ onSearch, placeholderText }: SearchProps) => {
         setInputValue(paramCity);
     }, [paramCity]);
 
+    useEffect(() => {
+        setActiveIndex(-1);
+    }, [suggestions]);
+
     const handleSelect = (city: string) => {
         setInputValue(city);
         setSearchParams({ city });
@@ -50,12 +56,57 @@ export const Searchbar = ({ onSearch, placeholderText }: SearchProps) => {
         setSuggestions([]);
     };
 
-    function onSubmit(e: React.FormEvent) {
+    async function onSubmit(e: React.FormEvent) {
         e.preventDefault();
-        if (inputValue.trim().length !== 0) onSearch(inputValue);
-        setIsFocused(false);
-        setSuggestions([]);
+        const city = inputValue.trim();
+        if (!city) {
+            toast.error("Please enter a city name");
+            return;
+        }
+        try {
+            const res = await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=ee7910632a0567ef1dcf70405cc047d7`);
+            const data = await res.json();
+            if (!data || data.length === 0) {
+                toast.error("City not found. Please enter a valid city.");
+                return;
+            }
+            onSearch(city);
+            setSearchParams({ city });
+            setIsFocused(false);
+            setSuggestions([]);
+        } catch (err) {
+            console.log(err);
+            toast.error("Unable to validate city. Try again.");
+        }
     }
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (!isOpen) return;
+        if (e.key === "ArrowDown") {
+            e.preventDefault();
+            setActiveIndex(prev =>
+                prev < suggestions.length - 1 ? prev + 1 : 0
+            );
+        }
+        else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            setActiveIndex(prev =>
+                prev > 0 ? prev - 1 : suggestions.length - 1
+            );
+        }
+        else if (e.key === "Enter") {
+            if (activeIndex >= 0) {
+                e.preventDefault();
+                handleSelect(suggestions[activeIndex].name);
+                setIsFocused(false);
+                setSuggestions([]);
+            }
+        }
+        else if (e.key === "Escape") {
+            setSuggestions([]);
+            setIsFocused(false);
+        }
+    };
 
     return (
         <div className="w-full">
@@ -67,6 +118,7 @@ export const Searchbar = ({ onSearch, placeholderText }: SearchProps) => {
                                 setInputValue(e.target.value);
                                 setIsFocused(true);
                             }}
+                            onKeyDown={handleKeyDown}
                             onFocus={() => setIsFocused(true)}
                             onBlur={() => setIsFocused(false)}
                             className="w-full h-11 px-3 pr-10 border rounded-md outline-none focus:ring-1 focus:ring-blue-500"
@@ -87,7 +139,7 @@ export const Searchbar = ({ onSearch, placeholderText }: SearchProps) => {
                         {isOpen && (
                             <ul className="absolute top-full left-0 w-full border border-t-0 bg-white z-20 max-h-60 overflow-y-auto rounded-b-md">
                                 {suggestions.map((item, index) => (
-                                    <li key={item.name + index} onMouseDown={() => handleSelect(item.name)} className="px-3 py-2 cursor-pointer border-b text-black hover:bg-gray-200 text-left">
+                                    <li key={item.name + index} onMouseDown={() => handleSelect(item.name)} className={`px-3 py-2 cursor-pointer border-b text-black text-left ${activeIndex === index ? "bg-gray-300" : "hover:bg-gray-200"}`}>
                                         <strong> {item.name} {item.state ? `, ${item.state}` : ""} ({getCountryName(item.country)}) </strong>
                                     </li>
                                 ))}

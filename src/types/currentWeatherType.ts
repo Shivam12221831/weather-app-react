@@ -1,6 +1,6 @@
 export type CurrentWeatherProp = {
     city:string;
-    refetchTrigger: number;
+    // refetchTrigger: number;
     setError: (error: string) => void;
 }
 

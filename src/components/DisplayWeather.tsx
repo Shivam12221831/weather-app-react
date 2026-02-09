@@ -14,7 +14,6 @@ import { ErrorBox } from "./ErrorBox";
 
 export const DisplayWeather = () => {
     const navigate = useNavigate();
-    const [refetchTrigger, setRefetchTrigger] = useState<number>(0);
     const [error, setError] = useState("");
     const [showFavDropdown, setShowFavDropdown] = useState<boolean>(false);
     const [searchParam, setSearchParams] = useSearchParams();
@@ -55,7 +54,6 @@ export const DisplayWeather = () => {
     function handleSelectCity(selectedCity: string) {
         const splitedCity = selectedCity.split(",")[0];
         setSearchParams({ city: splitedCity });
-        setRefetchTrigger(prev => prev + 1);
         setShowFavDropdown(false);
     }
 
@@ -107,7 +105,6 @@ export const DisplayWeather = () => {
                         <Searchbar
                             onSearch={(newCity) => {
                                 setSearchParams({ city: newCity });
-                                setRefetchTrigger(prev => prev + 1);
                             }}
                             placeholderText="Search a city to get weather"
                         />
@@ -127,8 +124,8 @@ export const DisplayWeather = () => {
                 {city && !error && (
                     <div>
                         <div className="m-10 lg:grid lg:grid-cols-2 gap-5">
-                            <CurrentWeather city={city} refetchTrigger={refetchTrigger} setError={setError} />
-                            <Forecast city={city} refetchTrigger={refetchTrigger} setError={setError} />
+                            <CurrentWeather city={city} setError={setError} />
+                            <Forecast city={city} setError={setError} />
                         </div>
                     </div>
                 )}

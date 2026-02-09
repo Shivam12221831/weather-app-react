@@ -1,6 +1,6 @@
 export type ForecastProps = {
     city: string,
-    refetchTrigger: number,
+    // refetchTrigger: number,
     setError: (error: string) => void;
 }
 

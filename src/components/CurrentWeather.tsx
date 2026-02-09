@@ -11,7 +11,7 @@ import { useContext, useEffect } from "react";
 import { ThemeContext } from "../context/ThemeContext";
 import { FavoritesContext } from "@/context/FavoritesContext";
 
-export const CurrentWeather = ({ city, refetchTrigger, setError }: CurrentWeatherProp) => {
+export const CurrentWeather = ({ city, setError }: CurrentWeatherProp) => {
     const context = useContext(ThemeContext);
     const favContext = useContext(FavoritesContext);
 
@@ -22,7 +22,6 @@ export const CurrentWeather = ({ city, refetchTrigger, setError }: CurrentWeathe
         city
             ? `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=ee7910632a0567ef1dcf70405cc047d7`
             : null,
-        refetchTrigger
     );
 
     useEffect(() => {

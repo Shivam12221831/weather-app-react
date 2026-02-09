@@ -18,10 +18,9 @@ import '../assets/swiperStyles.css';
 
 import { Pagination, Navigation } from 'swiper/modules';
 
-export const Forecast = ({ city, refetchTrigger, setError }: ForecastProps) => {
+export const Forecast = ({ city, setError }: ForecastProps) => {
     const {data, loading, error} = useFetch<ForecastType>(
         city ? `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=ee7910632a0567ef1dcf70405cc047d7` : null,
-        refetchTrigger
     );
     
     const context = useContext(ThemeContext);

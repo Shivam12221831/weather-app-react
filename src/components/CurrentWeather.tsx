@@ -67,7 +67,7 @@ export const CurrentWeather = ({ city, refetchTrigger, setError }: CurrentWeathe
                         </p>
                     </div>
 
-                    <div className="my-3 grid grid-cols-1 sm:grid-cols-2 gap-1">
+                    <div className="my-7 grid grid-cols-1 sm:grid-cols-2 gap-1">
                         <p className={button}>
                             <WiSunrise size={22} />
                             Sunrise: {formatTime(data.sys.sunrise)}

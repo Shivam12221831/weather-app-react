@@ -18,11 +18,10 @@ export const CurrentWeather = ({ city, setError }: CurrentWeatherProp) => {
     const cls = context?.theme === "dark" ? "p-6 sm:p-8 lg:p-10 rounded-2xl dark" : "p-6 sm:p-8 lg:p-10 rounded-2xl text-black bg-blue-100";
     const button = context?.theme === "dark" ? "flex items-center justify-center gap-2 text-center rounded-lg m-1 px-4 py-2 w-full bg-[#334155]" : "flex items-center justify-center gap-2 text-center rounded-lg m-1 px-4 py-2 w-full bg-blue-200";
 
-    const { data, loading, error } = useFetch<CurrentWeatherType>(
-        city
-            ? `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=ee7910632a0567ef1dcf70405cc047d7`
-            : null,
-    );
+    const { data, loading, error } = useFetch<CurrentWeatherType>(city ? `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=ee7910632a0567ef1dcf70405cc047d7` : null);
+
+    const fullName = `${data?.name}, ${getCountryName(data?.sys.country || "")}`;
+    const displayName = fullName.length > 20 ? data?.name : fullName;
 
     useEffect(() => {
         if (error) {
@@ -52,7 +51,7 @@ export const CurrentWeather = ({ city, setError }: CurrentWeatherProp) => {
                 <div className={cls}>
                     <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
                         <div className="flex flex-wrap items-center gap-3">
-                            <p className="text-2xl sm:text-3xl lg:text-4xl font-bold">{data.name}, {getCountryName(data.sys.country)}</p>
+                            <p className="text-2xl sm:text-3xl lg:text-4xl font-bold">{displayName}</p>
                             <FaHeart
                                 onClick={handleFavorite}
                                 className={ favContext?.isFavorite( data.name + ", " + getCountryName(data.sys.country)) ? "border-none text-red-500 cursor-pointer" : "text-white cursor-pointer" }
@@ -68,51 +67,51 @@ export const CurrentWeather = ({ city, setError }: CurrentWeatherProp) => {
 
                     <div className="my-7.5 grid grid-cols-1 sm:grid-cols-2 gap-1">
                         <p className={button}>
-                            <WiSunrise size={22} />
+                            <WiSunrise size={22} className="text-yellow-500"/>
                             Sunrise: {formatTime(data.sys.sunrise)}
                         </p>
                         <p className={button}>
-                            <WiSunset size={22} />
+                            <WiSunset size={22} className="text-orange-600"/>
                             Sunset: {formatTime(data.sys.sunset)}
                         </p>
                         <p className={button}>
-                            <IoIosWater size={18} />
+                            <IoIosWater size={18} className="text-blue-400"/>
                             Humidity: {data.main.humidity}%
                         </p>
                         <p className={button}>
-                            <WiDaySunny size={22} />
+                            <WiDaySunny size={22} className="text-orange-400" />
                             Feels Like: {toCelsius(data.main.feels_like)}
                         </p>
                         <p className={button}>
-                            <FaTemperatureLow />
+                            <FaTemperatureLow className="text-cyan-400" />
                             Temp Min: {toCelsius(data.main.temp_min)}
                         </p>
                         <p className={button}>
-                            <FaTemperatureHigh />
+                            <FaTemperatureHigh className="text-red-400" />
                             Temp Max: {toCelsius(data.main.temp_max)}
                         </p>
                         <p className={button}>
-                            <LiaTachometerAltSolid size={22} />
+                            <LiaTachometerAltSolid size={22} className="text-blue-400"/>
                             Pressure: {data.main.pressure} hPa
                         </p>
                         <p className={button}>
-                            <FaWind size={18} />
-                            Wind Speed: {Math.round(data.wind.speed)}km
+                            <FaWind size={18} className="text-emerald-400"/>
+                            Wind Speed: {Math.round(data.wind.speed)}m/s
                         </p>
                         <p className={button}>
-                            <LiaTachometerAltSolid size={22} />
+                            <LiaTachometerAltSolid size={22} className="text-blue-400"/>
                             Sea Level: {data.main.sea_level} hPa
                         </p>
                         <p className={button}>
-                            <LiaTachometerAltSolid size={22} />
+                            <LiaTachometerAltSolid size={22} className="text-blue-400" />
                             Ground Level: {data.main.grnd_level} hPa
                         </p>
                     </div>
                     <hr />
                     <div className="mt-2 flex items-center justify-between gap-4">
                         <div className="text-base sm:text-lg space-y-1">
-                            <p>Visibility: {data.visibility / 1000} km</p>
-                            <p>Weather: {data.weather[0].description}</p>
+                            <p>Visibility: {(data.visibility / 1000).toFixed(2)} km</p>
+                            <p>Current Condition: {data.weather[0].description}</p>
                         </div>
                         <div>
                             <p className="text-5xl sm:text-6xl lg:text-7xl font-sans font-bold">

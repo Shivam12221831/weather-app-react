@@ -1,7 +1,4 @@
-type ErrorStateProps = {
-  message?: string;
-};
-
+import type { ErrorStateProps } from "@/types/errorTypes";
 import { TiWeatherPartlySunny } from "react-icons/ti";
 import { ThemeContext } from "@/context/ThemeContext";
 import { useContext } from "react";

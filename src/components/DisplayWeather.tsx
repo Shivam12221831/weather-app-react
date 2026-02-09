@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import { CurrentWeather } from "./CurrentWeather";
 import { Forecast } from "./Forecast";
 import { Searchbar } from "./Searchbar";
@@ -29,10 +30,7 @@ export const DisplayWeather = () => {
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
-            if (
-                dropdownRef.current &&
-                !dropdownRef.current.contains(event.target as Node)
-            ) {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
                 setShowFavDropdown(false);
             }
         }
@@ -43,7 +41,6 @@ export const DisplayWeather = () => {
     }, []);
 
     useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setError("");
     }, [city]);
 
@@ -93,10 +90,10 @@ export const DisplayWeather = () => {
 
             <div className={ themeContext?.theme === "dark" ? "relative z-10 min-h-screen font-semibold text-black" : "relative z-10 min-h-screen font-semibold text-white" }>
                 <div className="font-serif">
-                    <div className="py-10 px-5 flex flex-col lg:flex-row items-center lg:items-center lg:justify-between gap-6">
+                    <div className="py-5 px-5 flex flex-col lg:flex-row items-center lg:items-center lg:justify-between gap-6">
                         <p className="text-4xl sm:text-5xl lg:pl-17 font-semibold order-1 lg:order-2 text-center">WeatherDash</p>
 
-                        <div ref={dropdownRef} className="relative w-45 order-3 lg:order-1">
+                        <div ref={dropdownRef} className="relative w-48 order-3 lg:order-1">
                             <button onClick={handleFavorite} className={`w-full h-9 pl-3 pr-2 cursor-pointer flex items-center justify-between rounded-md ${ theme === "dark" ? "button-dark" : "button-light"}`}>
                                 Favourite Cities
                                 <RiArrowDropDownLine size={28} />
@@ -122,7 +119,7 @@ export const DisplayWeather = () => {
                             )}
                         </div>
 
-                        <div className="flex flex-wrap justify-center gap-2 md:gap-3 order-2">
+                        <div className="flex flex-wrap justify-center gap-2 md:gap-2 order-2">
                             <button onClick={handleCurrentLocation} className={`rounded-md h-9 px-3 ${ theme === "dark" ? "button-dark" : "button-light" }`}>
                                 <div className="flex gap-1 items-center">
                                     <MdMyLocation className="text-red-500 pb-0.5" size={16}/>

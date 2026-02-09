@@ -22,10 +22,9 @@ export const Searchbar = ({ onSearch, placeholderText }: SearchProps) => {
 
     useEffect(() => {
         if (!debouncedCity || debouncedCity.length <= 2) return;
-
         const fetchCities = async () => {
             try {
-                const res = await fetch( `https://api.openweathermap.org/geo/1.0/direct?q=${debouncedCity}&limit=5&appid=ee7910632a0567ef1dcf70405cc047d7`);
+                const res = await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${debouncedCity}&limit=5&appid=ee7910632a0567ef1dcf70405cc047d7`);
                 if (!res.ok) {
                     throw new Error("Something went wrong, cannot fetch cities");
                 }
@@ -84,15 +83,11 @@ export const Searchbar = ({ onSearch, placeholderText }: SearchProps) => {
         if (!isOpen) return;
         if (e.key === "ArrowDown") {
             e.preventDefault();
-            setActiveIndex(prev =>
-                prev < suggestions.length - 1 ? prev + 1 : 0
-            );
+            setActiveIndex(prev => prev < suggestions.length - 1 ? prev + 1 : 0);
         }
         else if (e.key === "ArrowUp") {
             e.preventDefault();
-            setActiveIndex(prev =>
-                prev > 0 ? prev - 1 : suggestions.length - 1
-            );
+            setActiveIndex(prev => prev > 0 ? prev - 1 : suggestions.length - 1);
         }
         else if (e.key === "Enter") {
             if (activeIndex >= 0) {
@@ -128,6 +123,7 @@ export const Searchbar = ({ onSearch, placeholderText }: SearchProps) => {
                             <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 font-extrabold cursor-pointer text-gray-400 hover:text-gray-700"
                                 onMouseDown={(e) => {
                                     e.preventDefault();
+                                    setInputValue("");
                                     setIsFocused(false);
                                     setSuggestions([]);
                                 }}

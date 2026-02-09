@@ -4,7 +4,6 @@ export const getCurrentLocation = (): Promise<{ city: string | null; error?: "pe
             resolve({ city: null, error: "unknown" });
             return;
         }
-
         navigator.geolocation.getCurrentPosition(
             async (position) => {
                 const { latitude, longitude } = position.coords;

@@ -1,34 +1,61 @@
-import weather_img from '../assets/hero_dp.png';
-import bg_img from '../assets/hero_bg.jpg';
+import bg_img from '../assets/hero_bg4.jpg';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Searchbar } from './Searchbar';
+import { MdMyLocation } from "react-icons/md";
+import { getCurrentLocation } from "@/utils/getCurrentLocation";
+import { toast } from "sonner";
 
 export const Hero = () => {
-
     const [city, setCity] = useState("");
     const navigate = useNavigate();
 
     useEffect(() => {
-        if(!city) return;
-        navigate(`/weather?city=${city}`);
+        if (!city) return;
+        navigate(`/weather?city=${city}`, { replace: true });
     }, [city, navigate]);
 
+    async function handleCurrentLocation() {
+        const toastId = toast.loading("Detecting your location...");
+        const result = await getCurrentLocation();
+        if (result.error === "permission") {
+            toast.error("Location permission denied", { id: toastId });
+            return;
+        }
+        if (result.error === "unavailable") {
+            toast.error("Location unavailable", { id: toastId });
+            return;
+        }
+        if (result.error === "timeout") {
+            toast.error("Location request timed out", { id: toastId });
+            return;
+        }
+        if (!result.city) {
+            toast.error("Unable to fetch location", { id: toastId });
+            return;
+        }
+        toast.success(`Showing weather for ${result.city}`, { id: toastId });
+        navigate(`/weather?city=${result.city}`, { replace: true });
+    }
+
     return (
-        <section className="text-gray-900 body-font font-serif min-h-screen flex justify-center items-center bg-cover bg-center" style={{ backgroundImage: `url(${bg_img})`}}>
-            <div className="container mx-auto flex px-5 py-24 md:flex-row flex-col justify-center items-center">
-                <div className="flex justify-center lg:max-w-lg lg:w-full md:w-1/2 w-5/6 mb-10 md:mb-0">
-                    <img className="object-cover object-center w-60 h-60 md:w-80 md:h-80 lg:w-100 lg:h-100 rounded pb-10" alt="hero" src={weather_img} />
-                </div>
-                <div className="md:w-1/2 lg:pl-10 md:pl-16 flex flex-col md:items-start md:text-left items-center font-bold text-center">
-                    <h1 className="title-font sm:text-6xl md:text-5xl lg:text-6xl xl:text-7xl text-5xl mb-4 text-gray-900">WeatherDash</h1>
-                    <p className="mb-8 px-10 md:px-0 xl:pr-10 leading-relaxed">A centralized dashboard for real-time atmospheric metrics, featuring precise wind speed, humidity, and visibility tracking.</p>
-                    <div className='md:w-100 xl:w-135 text-start'>
+        <section className="relative min-h-screen flex items-center justify-center bg-cover bg-center px-4" style={{ backgroundImage: `url(${bg_img})` }}>
+            <div className="relative z-10 w-full max-w-3xl text-center text-black font-serif"> 
+                <h1 className=" text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-6 tracking-tight">WeatherDash</h1>
+                <p className=" text-base sm:text-md sm:px-20 lg:px-10 leading-relaxed mb-5 text-black font-semibold">
+                    Real-time weather intelligence at your fingertips. Track temperature, humidity, wind, and visibility with precision.
+                </p>
+                <div className="w-full max-w-md gap-2 mx-auto space-y-4">
+                    <div className='text-start'>
                         <label htmlFor="hero-city" className="leading-7 text-sm lg:text-md">Search a city to get started</label>
-                        <Searchbar onSearch={ (newCity) => setCity(newCity)} placeholderText=''/>
+                        <Searchbar onSearch={(newCity) => setCity(newCity)} placeholderText=""/>
                     </div>
+                    <button onClick={handleCurrentLocation} className="w-full h-11 flex items-center justify-center gap-2 bg-white text-gray-900 font-semibold py-3 rounded-lg shadow-lg cursor-pointer hover:bg-[#ff385c] hover:text-white transition">
+                        <MdMyLocation className="" size={18}/>
+                        Use Current Location
+                    </button>
                 </div>
             </div>
         </section>
-    )
-}
+    );
+};

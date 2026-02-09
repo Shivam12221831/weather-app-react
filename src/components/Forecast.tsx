@@ -13,18 +13,14 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-
 import '../assets/swiperStyles.css';
-
 import { Pagination, Navigation } from 'swiper/modules';
 
 export const Forecast = ({ city, setError }: ForecastProps) => {
-    const {data, loading, error} = useFetch<ForecastType>(
-        city ? `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=ee7910632a0567ef1dcf70405cc047d7` : null,
-    );
+    const {data, loading, error} = useFetch<ForecastType>(city ? `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=ee7910632a0567ef1dcf70405cc047d7` : null);
     
     const context = useContext(ThemeContext);
-    
+
     useEffect(() => {
         if (error) {
             setError(error);
@@ -69,22 +65,22 @@ export const Forecast = ({ city, setError }: ForecastProps) => {
                                     <div key={item.dt + item.main.temp} className={itemStyle}>
                                         <p className="mb-1">{getTime(item.dt_txt)}</p>
                                         <div className="flex justify-center gap-3 items-center">
-                                            <FiThermometer/>
+                                            <FiThermometer className="text-red-400"/>
                                             <span>{toCelsius(item.main.temp)}</span>
                                         </div>
                                         <div className="flex justify-center gap-3 items-center">
-                                            <IoIosWater/>
+                                            <IoIosWater className="text-blue-400"/>
                                             <span>{item.main.humidity}%</span>
                                         </div>
                                         <div className="flex justify-center gap-3 items-center">
-                                            <MdOutlineVisibility/>
+                                            <MdOutlineVisibility className="text-orange-400"/>
                                             <span>{item.visibility/1000}km</span>
                                         </div>
                                         <div className="flex justify-center gap-3 items-center">
-                                            <FaWind/>
-                                            <span>{Math.round(item.wind.speed)}km</span>
+                                            <FaWind className="text-emerald-400"/>
+                                            <span>{Math.round(item.wind.speed)}m/s</span>
                                         </div>
-                                        <p>{item.weather[0].description}</p>
+                                        <p>{item.weather[0].main}</p>
                                     </div>
                                 ))}
                             </div>

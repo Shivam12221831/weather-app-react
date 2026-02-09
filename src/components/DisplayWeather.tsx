@@ -112,7 +112,7 @@ export const DisplayWeather = () => {
                             placeholderText="Search a city to get weather"
                         />
                     </div>
-                    
+
                     {city && 
                         <div className="flex justify-center items-center gap-5 pb-5">
                             <p className="text-center font-bold pb-5 h-8">Weather searched for the city : {city}</p>

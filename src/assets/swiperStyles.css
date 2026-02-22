@@ -14,8 +14,9 @@
 
 .swiper-button-prev,
 .swiper-button-next {
-    color: black;
+    color: #007aff;
     margin: 2px;
-    padding: 6px 0px;
+    padding: 10px 0px;
     border-radius: 50%;
+    /* color: ; */
 }

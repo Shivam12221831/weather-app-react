@@ -29,6 +29,7 @@ export const DisplayWeather = () => {
     const [showFavDropdown, setShowFavDropdown] = useState(false);
     const [showMobileMenu, setShowMobileMenu] = useState(false);
     const [showMobileFavs, setShowMobileFavs] = useState(false);
+    const [currentLocationCity, setCurrentLocationCity] = useState<string | null>(null);
     const [searchParam, setSearchParams] = useSearchParams();
     const city = searchParam.get("city");
     const themeContext = useContext(ThemeContext);
@@ -70,6 +71,10 @@ export const DisplayWeather = () => {
 
     async function handleCurrentLocation() {
         setShowMobileMenu(false);
+        if (currentLocationCity && currentLocationCity === city) {
+            toast.error("Already showing your current location weather");
+            return;
+        }
         const toastId = toast.loading("Detecting your location...");
         const result = await getCurrentLocation();
         if (result.error === "permission") { toast.error("Location permission denied", { id: toastId }); return; }
@@ -78,6 +83,7 @@ export const DisplayWeather = () => {
         if (!result.city) { toast.error("Unable to fetch location", { id: toastId }); return; }
         if (result.city === city) { toast.error("Already showing the current location weather", { id: toastId }); return; }
         toast.success(`Showing weather for ${result.city}`, { id: toastId });
+        setCurrentLocationCity(result.city);
         addRecentCity(result.city);
         setSearchParams({ city: result.city });
     }
